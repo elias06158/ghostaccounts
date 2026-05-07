@@ -8,12 +8,16 @@ import {
   Clock,
   ChevronRight,
   ListChecks,
+  Sparkles,
+  ArrowUpRight,
+  BellRing,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { calculateRiskScore } from "@/lib/risk-score";
+import { calculateRiskScore, getRiskInsights } from "@/lib/risk-score";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { RiskForecast } from "@/components/dashboard/RiskForecast";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -49,6 +53,7 @@ export default async function DashboardPage({ params }: PageProps) {
 
   const results = scanResults ?? [];
   const risk = calculateRiskScore(results);
+  const riskInsights = getRiskInsights(risk);
   const hasScanned = results.length > 0;
 
   const riskColor =
@@ -67,6 +72,33 @@ export default async function DashboardPage({ params }: PageProps) {
 
   const displayName =
     profile?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "there";
+
+  const quickActions = [
+    {
+      id: "scan",
+      icon: <ScanLine className="w-4 h-4 text-indigo-500" />,
+      title: t("action_scan_title"),
+      description: t("action_scan_desc"),
+      href: `/${locale}/dashboard/scan`,
+      buttonLabel: t("action_scan_button"),
+    },
+    {
+      id: "breaches",
+      icon: <BellRing className="w-4 h-4 text-red-500" />,
+      title: t("action_breach_title"),
+      description: t("action_breach_desc"),
+      href: `/${locale}/dashboard/accounts?filter=breached`,
+      buttonLabel: t("action_breach_button"),
+    },
+    {
+      id: "cleanup",
+      icon: <Sparkles className="w-4 h-4 text-emerald-500" />,
+      title: t("action_cleanup_title"),
+      description: t("action_cleanup_desc"),
+      href: `/${locale}/dashboard/accounts?filter=active`,
+      buttonLabel: t("action_cleanup_button"),
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -166,6 +198,63 @@ export default async function DashboardPage({ params }: PageProps) {
           </div>
 
           {/* Recent Breach Alerts */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <Card className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-semibold text-foreground">{t("risk_drivers")}</h2>
+                <Badge variant="info">{t("risk_explained")}</Badge>
+              </div>
+              <div className="space-y-3">
+                {riskInsights.map((insight) => {
+                  const colorClass =
+                    insight.id === "breach"
+                      ? "bg-red-500"
+                      : insight.id === "inactive"
+                      ? "bg-amber-500"
+                      : "bg-indigo-500";
+                  const label =
+                    insight.id === "breach"
+                      ? t("risk_driver_breach")
+                      : insight.id === "inactive"
+                      ? t("risk_driver_inactive")
+                      : t("risk_driver_footprint");
+
+                  return (
+                    <div key={insight.id} className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">{label}</span>
+                        <span className="font-medium text-foreground">+{insight.impact} / {insight.weight}</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${colorClass}`}
+                          style={{ width: `${Math.min((insight.impact / insight.weight) * 100, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            <Card className="lg:col-span-3">
+              <h2 className="font-semibold text-foreground mb-4">{t("action_center")}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {quickActions.map((action) => (
+                  <div key={action.id} className="p-3 rounded-xl border border-border/70 bg-background/70">
+                    <div className="inline-flex p-2 rounded-lg bg-muted mb-2">{action.icon}</div>
+                    <p className="text-sm font-semibold text-foreground">{action.title}</p>
+                    <p className="text-xs text-muted-foreground mt-1 min-h-10">{action.description}</p>
+                    <Link href={action.href} className="inline-flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-400 mt-2">
+                      {action.buttonLabel}
+                      <ArrowUpRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-foreground">{t("recent_breaches")}</h2>
@@ -198,6 +287,37 @@ export default async function DashboardPage({ params }: PageProps) {
                 <span className="text-sm">{t("no_breaches")}</span>
               </Card>
             )}
+          </div>
+
+          {/* Ghost Risk Forecast + Digital Twin teaser */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div className="lg:col-span-3">
+              <RiskForecast results={results} locale={locale} />
+            </div>
+            <div className="lg:col-span-2">
+              <Link href={`/${locale}/dashboard/twin`} className="block group">
+                <div className="h-full rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/8 to-purple-500/5 p-6 hover:border-indigo-500/60 hover:from-indigo-500/12 transition-all duration-300 flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-xl">
+                      🌐
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground text-sm">{t("twin_title")}</h3>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-medium">
+                        {t("twin_badge")}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                    {t("twin_desc")}
+                  </p>
+                  <div className="flex items-center gap-1.5 text-indigo-400 text-sm font-medium group-hover:gap-2.5 transition-all">
+                    {t("twin_cta")}
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </Link>
+            </div>
           </div>
         </>
       )}

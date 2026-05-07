@@ -147,7 +147,7 @@ const deckblatt = [
 const kap1 = [
   h1("1. Zusammenfassung"),
   h2("1.1 Die Idee"),
-  p("GhostAccounts ist eine browserbasierte SaaS-Anwendung, die Nutzern hilft, vergessene Online-Konten aufzuspueren, zu bewerten und gezielt zu loeschen. Die App scannt das E-Mail-Postfach des Nutzers lokal im Browser nach Registrierungsbestaedigungen, erstellt eine vollstaendige Liste aller erkannten Dienste und berechnet einen Risiko-Score basierend auf Inaktivitaet und bekannten Datenlecks. Ein integrierter Loesch-Assistent fuehrt Nutzer direkt zur Konto-Loeschseite des jeweiligen Dienstes. GhostAccounts schliessst damit eine klar identifizierte Marktluecke: Waehrend Breach-Monitoring-Dienste ausschliesslich Datenleck-Benachrichtigungen bieten, adressiert GhostAccounts das ursaechliche Problem – die schiere Anzahl an vergessenen Konten, die das Risiko erst entstehen laesst."),
+  p("GhostAccounts ist eine browserbasierte SaaS-Anwendung, die Nutzern hilft, vergessene Online-Konten aufzuspueren, zu bewerten und gezielt zu loeschen. Die App scannt das E-Mail-Postfach des Nutzers lokal im Browser oder per IMAP-Metadatenzugriff nach belastbaren Konto-Hinweisen, erstellt eine vollstaendige Liste aller erkannten Dienste und berechnet einen Risiko-Score basierend auf Inaktivitaet sowie nachgewiesenen Risikomerkmalen. Ein integrierter Loesch-Assistent fuehrt Nutzer direkt zur Konto-Loeschseite des jeweiligen Dienstes. GhostAccounts schliesst damit eine klar identifizierte Marktluecke: Waehrend reine Breach-Dienste ausschliesslich Datenleck-Benachrichtigungen bieten, adressiert GhostAccounts das Grundproblem – die schiere Anzahl an vergessenen Konten, die das Risiko erst entstehen laesst."),
   h2("1.2 Warum jetzt?"),
   p("Die digitale Identitaet der Durchschnittsperson umfasst laut NordPass Password Manager Report 2025 durchschnittlich 168 Online-Konten. Davon werden aktiv nur etwa 25 bis 30 genutzt. Die restlichen 130+ Konten schlummern, sammeln Daten und sind Sicherheitsrisiken. Gleichzeitig tritt die EU-Datenstrategie 2025 in eine entscheidende Umsetzungsphase: Die DSGVO-Durchsetzung durch europaeische Behoerden erreichte 2025 ein Rekordhoch von ueber 2,9 Milliarden Euro an Bussgeldern (GDPR Enforcement Tracker 2025). Nutzer werden sensibler fuer Datenschutz, wissen aber nicht, wo ihre Daten ueberall liegen. GhostAccounts liefert genau diese Transparenz."),
   src("NordPass Password Manager Report 2025, GDPR Enforcement Tracker 2025, Statista Digital Identity Report 2025")
@@ -175,8 +175,8 @@ const kap2 = [
   src("Verizon DBIR 2025, noyb.eu 2025, Zuora Subscription Economy Index 2025"),
 
   h2("2.4 Regulatorisches Umfeld"),
-  p("GhostAccounts operiert in einem regulatorisch vorteilhaften Umfeld. Das Recht auf Loeschung (Art. 17 DSGVO) gibt Nutzern das Recht, ihre Daten bei jedem Dienst loeschen zu lassen – GhostAccounts macht dieses Recht operational und zugaenglich. Der EU AI Act (ab August 2026) erfordert Transparenz bei automatisierten Systemen, GhostAccounts als regelbasiertes Tool (kein Hochrisiko-KI nach Anhang III) erfuellt die Anforderungen. Der lokale Browser-Scan (keine E-Mail-Inhalte an Server) ist DSGVO-by-Design und staerkt den USP gegenueber Cloud-basierten Konkurrenten. OAuth 2.0 (Gmail API, Microsoft Graph API) als Authentifizierungsstandard sichert den Postfach-Zugriff ohne Passwort-Weitergabe."),
-  src("DSGVO (EU) 2016/679 Art. 17, EU AI Act 2024/1689, Google Gmail API Developer Docs 2025, Microsoft Graph API Docs 2025")
+  p("GhostAccounts operiert in einem regulatorisch vorteilhaften Umfeld. Das Recht auf Loeschung (Art. 17 DSGVO) gibt Nutzern das Recht, ihre Daten bei jedem Dienst loeschen zu lassen – GhostAccounts macht dieses Recht operational und zugaenglich. Der EU AI Act (ab August 2026) erfordert Transparenz bei automatisierten Systemen, GhostAccounts als regelbasiertes Tool (kein Hochrisiko-KI nach Anhang III) erfuellt die Anforderungen. Der lokale Browser-Scan (keine E-Mail-Inhalte an Server) ist DSGVO-by-Design und staerkt den USP gegenueber Cloud-basierten Konkurrenten. OAuth 2.0 fuer Gmail und ein optionaler IMAP-Metadatenzugriff sichern den Postfach-Zugriff ohne serverseitige Mailinhalte."),
+  src("DSGVO (EU) 2016/679 Art. 17, EU AI Act 2024/1689, Google Gmail API Developer Docs 2025")
 ];
 
 // =====================================================================
@@ -213,9 +213,9 @@ const kap3 = [
   h2("3.3 Die Marktluecke"),
   p("Kein bestehender Wettbewerber kombiniert alle vier Kernelemente:"),
   li("Lokaler E-Mail-Scan zur Entdeckung ALLER Konten (nicht nur gespeicherter oder geleakter)"),
-  li("Risiko-Score basierend auf Inaktivitaet UND Breach-Status"),
-  li("Loesch-Assistent mit Direktlink und Schritt-fuer-Schritt-Anleitung"),
-  li("Monatliches Breach-Monitoring fuer alle gefundenen Konten"),
+  li("Risiko-Score basierend auf Inaktivitaet und belastbaren Erkennungsmerkmalen"),
+  li("Loesch-Assistent mit Direktlink, Schwierigkeitsgrad und Statusverfolgung"),
+  li("Wiederholbare Re-Scans zur Aktualisierung der Kontenliste"),
   p("Diese Kombination ist das Alleinstellungsmerkmal von GhostAccounts: von der Entdeckung bis zur Loeschung, alles in einem Tool, DSGVO-konform und privatsphaeresicher.")
 ];
 
@@ -250,8 +250,8 @@ const kap5 = [
     ["Problem heute", "Loesung durch GhostAccounts", "Konkreter Vorteil"],
     [
       ["130+ vergessene Konten unsichtbar und unkontrolliert", "Lokaler E-Mail-Scan findet alle Registrierungsbestaedigungen automatisch", "Vollstaendige Kontenliste in Minuten, ohne manuelles Recherchieren"],
-      ["Datenlecks werden erst nach Monaten bemerkt", "Breach-Monitoring ueberwacht alle gefundenen Konten kontinuierlich", "Sofortige Benachrichtigung bei neuen Lecks fuer alle Accounts, nicht nur bekannte"],
-      ["Kontol-Loeschung ist muehsam und unbekannt", "Loesch-Assistent mit Direktlinks und Schritt-fuer-Schritt-Anleitung", "Account in 2-3 Klicks loeschen statt 30 Minuten Suche"],
+      ["Datenlecks werden oft zu spaet erkannt", "Wiederholbare Scans aktualisieren Konten- und Risikostand regelmaessig", "Neue oder riskantere Konten werden bei jedem erneuten Scan sichtbar"],
+      ["Kontol-Loeschung ist muehsam und unbekannt", "Loesch-Assistent mit Direktlinks, Status und Schwierigkeitsgrad", "Account in wenigen Klicks priorisieren und zur Loeschseite wechseln"],
       ["Vergessene Abonnements kosten unbemerkt Geld", "Risikoliste zeigt inaktive kostenpflichtige Dienste", "Durchschnittlich 62 EUR jaehrliche Einsparung durch erkannte Abo-Leichen"],
       ["Kein Ueberblick ueber den digitalen Fussabdruck", "Risiko-Score visualisiert Inaktivitaet und Gefaehrdungsgrad", "Klares, handlungsleitendes Bild der eigenen digitalen Praesenz"]
     ],
@@ -261,10 +261,10 @@ const kap5 = [
   src("Zuora Subscription Economy Index 2025, Verizon DBIR 2025, eigene Kalkulation"),
 
   h2("5.2 Nutzen fuer WAMOCON GmbH"),
-  p("GhostAccounts adressiert einen strukturell wachsenden Consumer-Privacy-Markt mit niedrigen Betriebskosten und hoher Retention durch monatliches Breach-Monitoring. Das Produkt erzeugt wiederkehrende Abo-Einnahmen und baut WAMOCON als Datenschutzmarke auf."),
+  p("GhostAccounts adressiert einen strukturell wachsenden Consumer-Privacy-Markt mit niedrigen Betriebskosten und hoher Retention durch wiederholbare Re-Scans und sichtbaren Aufraeum-Fortschritt. Das Produkt erzeugt wiederkehrende Abo-Einnahmen und baut WAMOCON als Datenschutzmarke auf."),
   pBold("Einnahmequellen:"),
   li("Free-Tier (Top 20 Konten + Risiko-Score) als Akquisitionskanal"),
-  li("Pro-Abo: 3,99 EUR/Monat – vollstaendige Liste, Loesch-Assistent, Re-Scan, Breach-Monitoring"),
+  li("Pro-Abo: 3,99 EUR/Monat – vollstaendige Liste, Loesch-Assistent und wiederholbare Re-Scans"),
   li("Langfristig: Affiliate-Einnahmen bei Vermittlung von VPN- und Passwort-Manager-Partnern"),
   pBold("Strategischer Wert:"),
   li("Eigenstaendiges Verbraucherprodukt in einem regulatorisch bevorteilierten Markt (DSGVO-Recht auf Loeschung)"),
@@ -282,8 +282,8 @@ const kap6 = [
     ["Quelle", "Was sie liefert", "Fuer welche Funktion", "Kosten"],
     [
       ["Google Gmail API (OAuth 2.0)", "Lesezugriff auf E-Mail-Metadaten und Betreffzeilen", "E-Mail-Scan zur Kontenerkennung", "Kostenlos (Kontingente: 1 Mrd. Einheiten/Tag)"],
-      ["Microsoft Graph API (OAuth 2.0)", "Lesezugriff auf Outlook/Hotmail E-Mails", "E-Mail-Scan fuer Microsoft-Nutzer", "Kostenlos (Free Tier ausreichend)"],
-      ["Have I Been Pwned API v3", "Breach-Daten fuer erkannte Dienste und E-Mail-Adressen", "Breach-Status und Monitoring", "3,50 USD/Monat (bis 10 RPM)"],
+      ["IMAP-kompatible Mailserver", "Lesezugriff auf E-Mail-Metadaten per App-Passwort oder Mailpasswort", "E-Mail-Scan fuer Outlook, Yahoo, iCloud, GMX, WEB.DE und weitere Anbieter", "Im jeweiligen Mailkonto enthalten"],
+      ["Optionale Breach-Datenquelle", "Zusaetzliche Sicherheitsdaten fuer spaetere Erweiterungen", "Erweiterbare Risikoanreicherung", "Optional"],
       ["Supabase", "PostgreSQL-Datenbank, Auth, Row Level Security", "Nutzerkonten, gespeicherte Kontenlisten", "10 EUR/Monat (Pro Tier)"],
       ["Vercel", "Hosting und serverlose Funktionen (Next.js)", "Frontend und Backend API-Routes", "Free Tier ausreichend fuer V1"]
     ],
@@ -292,10 +292,10 @@ const kap6 = [
   spacer(),
 
   h2("6.2 Technische Besonderheit: Lokaler Browser-Scan"),
-  p("Der E-Mail-Scan ist das Kernelement und gleichzeitig das groesste Differenzierungsmerkmal. Die Implementierung erfolgt vollstaendig client-seitig im Browser: Die Gmail- bzw. Outlook-API gibt die E-Mail-Betreffzeilen und Absender-Domains zurueck. Die Verarbeitung (Schluesselwort-Matching: 'Willkommen bei', 'Bestaetigung', 'verify your account') erfolgt im JavaScript-Code des Browsers. An den WAMOCON-Server werden ausschliesslich die erkannten Dienst-NAMEN (z.B. 'Spotify', 'LinkedIn') uebertragen – niemals E-Mail-Inhalte oder Metadaten. Dies ist der architektonische Kern der DSGVO-Konformitaet."),
+  p("Der E-Mail-Scan ist das Kernelement und gleichzeitig das groesste Differenzierungsmerkmal. Die Implementierung erfolgt fuer Gmail client-seitig im Browser und fuer weitere Anbieter ueber einen begrenzten IMAP-Metadatenzugriff: Absender, Betreff, Reply-To, List-Id und Datum werden als Signale ausgewertet. Die Verarbeitung erfolgt als evidenzbasierte Analyse im JavaScript-Code. An den WAMOCON-Server werden ausschliesslich erkannte Dienst-Metadaten und Risikoattribute uebertragen – niemals E-Mail-Inhalte. Dies ist der architektonische Kern der DSGVO-Konformitaet."),
 
   h2("6.3 Gesamtbewertung"),
-  p("Version 1 hat keine kritischen Abhaengigkeiten, die den Start blockieren koennen. Gmail API und Microsoft Graph API sind kostenlos und sofort verfuegbar. HIBP API ist pay-per-use ohne langen Vertrag. Einziges Risiko: Google oder Microsoft koennen OAuth-Scopes einschraenken. Gegenmassnahme: Minimale Scope-Anforderungen (readonly), klare Privacy Policy, und alternative manuelle Eingabe als Fallback fuer Nutzer ohne Gmail/Outlook.")
+  p("Version 1 hat keine kritischen Abhaengigkeiten, die den Start blockieren koennen. Gmail API ist kostenlos und sofort verfuegbar, weitere Anbieter lassen sich ueber IMAP mit App-Passwoertern oder Mailpasswoertern anbinden. Einziges Risiko: Anbieter koennen Metadatenzugriffe einschraenken. Gegenmassnahme: Minimale Scope-Anforderungen, klare Privacy Policy und ein IMAP-Fallback fuer gaengige Mailanbieter.")
 ];
 
 // =====================================================================
@@ -303,7 +303,7 @@ const kap6 = [
 // =====================================================================
 const kap7 = [
   h1("7. Anforderungen Version 1"),
-  p("Version 1 konzentriert sich auf den vollstaendigen Kernfluss: E-Mail-Scan, Kontenliste, Risiko-Score und Loesch-Assistent. Das Breach-Monitoring ist als Pro-Funktion enthalten."),
+  p("Version 1 konzentriert sich auf den vollstaendigen Kernfluss: E-Mail-Scan, Kontenliste, Risiko-Score und Loesch-Assistent. Wiederholbare Re-Scans halten die Kontenliste aktuell."),
 
   h2("7.1 Hauptprozesse"),
   pBold("7.1.1 E-Mail-Scan"),
@@ -311,10 +311,10 @@ const kap7 = [
     ["ID", "Anforderung", "Prioritaet", "Status"],
     [
       ["K-01", "OAuth 2.0 Verbindung mit Google Gmail API (Scope: gmail.readonly)", "Muss", "Neu"],
-      ["K-02", "OAuth 2.0 Verbindung mit Microsoft Graph API (Scope: Mail.Read)", "Muss", "Neu"],
-      ["K-03", "Client-seitiger E-Mail-Scan: Schluesselwort-Matching auf Betreffzeilen und Absender-Domains", "Muss", "Neu"],
-      ["K-04", "Dienst-Erkennung: Extraktion des Dienst-Namens aus Registrierungsbestaetigung", "Muss", "Neu"],
-      ["K-05", "Nur Dienst-Namen an Server uebertragen, keine E-Mail-Inhalte (Privacy by Design)", "Muss", "Neu"],
+      ["K-02", "IMAP-Scan fuer gaengige Mailanbieter mit App-Passwort- oder Passwort-Zugriff", "Muss", "Neu"],
+      ["K-03", "Evidenzbasierter E-Mail-Scan auf Betreff, Absender-Domains, Reply-To, List-Id und Datum", "Muss", "Neu"],
+      ["K-04", "Dienst-Erkennung: Kanonisierung des Dienst-Namens aus belastbaren Konto-Signalen", "Muss", "Neu"],
+      ["K-05", "Nur Dienst-Metadaten und Risikoattribute an Server uebertragen, keine E-Mail-Inhalte (Privacy by Design)", "Muss", "Neu"],
       ["K-06", "Scan-Fortschrittsanzeige waehrend der Verarbeitung", "Soll", "Neu"]
     ],
     [700, 5800, 1300, 1200]
@@ -328,9 +328,9 @@ const kap7 = [
       ["K-07", "Anzeige der erkannten Konten als strukturierte Liste mit Dienst-Name und Icon", "Muss", "Neu"],
       ["K-08", "Free-Tier: Anzeige der Top 20 Konten (sortiert nach Risiko)", "Muss", "Neu"],
       ["K-09", "Pro-Tier: Anzeige aller gefundenen Konten", "Muss", "Neu"],
-      ["K-10", "Risiko-Score (0-100) basierend auf: Anzahl Konten > 3 Jahre inaktiv, Breach-Status", "Muss", "Neu"],
+      ["K-10", "Risiko-Score (0-100) basierend auf: Anzahl Konten > 3 Jahre inaktiv und nachgewiesene Risikoindikatoren", "Muss", "Neu"],
       ["K-11", "Visuelle Risiko-Ampel: Gruen (0-30), Gelb (31-60), Rot (61-100)", "Soll", "Neu"],
-      ["K-12", "Breach-Status pro Konto ueber HIBP API abfragen und anzeigen", "Muss", "Neu"]
+      ["K-12", "Transparente Anzeige von Erkennungsqualitaet und Evidenzmenge pro Konto", "Muss", "Neu"]
     ],
     [700, 5800, 1300, 1200]
   ),
@@ -341,7 +341,7 @@ const kap7 = [
     ["ID", "Anforderung", "Prioritaet", "Status"],
     [
       ["K-13", "Direktlink zur Konto-Loeschseite des Dienstes (basierend auf justdeleteme.xyz Datenbank)", "Muss", "Neu"],
-      ["K-14", "Schritt-fuer-Schritt-Anleitung zur Konto-Loeschung pro Dienst (kuratierte Datenbank)", "Soll", "Neu"],
+      ["K-14", "Schwierigkeitsgrad und Statushinweis zur Konto-Loeschung pro Dienst", "Soll", "Neu"],
       ["K-15", "Schwierigkeitsgrad der Loeschung anzeigen: Einfach / Mittel / Schwer", "Soll", "Neu"],
       ["K-16", "Status-Tracking: Nutzer kann Konto als 'geloescht' oder 'ignoriert' markieren", "Muss", "Neu"]
     ],
@@ -349,13 +349,13 @@ const kap7 = [
   ),
   spacer(),
 
-  pBold("7.1.4 Breach-Monitoring (Pro)"),
+  pBold("7.1.4 Re-Scan und Aktualisierung (Pro)"),
   tbl(
     ["ID", "Anforderung", "Prioritaet", "Status"],
     [
-      ["K-17", "Monatlicher automatischer Re-Scan der gespeicherten Kontenliste auf neue Breaches", "Muss (Pro)", "Neu"],
-      ["K-18", "E-Mail-Benachrichtigung bei neu erkanntem Breach fuer ein gespeichertes Konto", "Muss (Pro)", "Neu"],
-      ["K-19", "In-App-Benachrichtigung bei neuem Breach (Notification-Badge im Dashboard)", "Soll (Pro)", "Neu"],
+      ["K-17", "Wiederholbarer Re-Scan der gespeicherten Kontenliste auf neue oder staerker belegte Dienste", "Muss (Pro)", "Neu"],
+      ["K-18", "Aktualisierung der Risikoeinschaetzung bei jedem erneuten Scan", "Muss (Pro)", "Neu"],
+      ["K-19", "In-App-Hinweis auf neu erkannte oder geaenderte Konten seit dem letzten Scan", "Soll (Pro)", "Neu"],
       ["K-20", "Warnung bei Erkennung eines neu registrierten Kontos (neuer Dienst im naechsten Scan)", "Soll (Pro)", "Neu"]
     ],
     [700, 5800, 1300, 1200]

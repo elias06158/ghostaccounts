@@ -75,6 +75,48 @@ export function SettingsClient({ profile, locale }: SettingsClientProps) {
     URL.revokeObjectURL(url);
   }
 
+  async function exportCsv() {
+    const supabase = createClient();
+    const { data: scanData } = await supabase
+      .from("scan_results")
+      .select("service_name,service_domain,breach_status,deletion_status,detection_confidence,last_email_date,first_detected_at,evidence_count")
+      .eq("user_id", profile.id)
+      .order("first_detected_at", { ascending: false });
+
+    const rows = scanData ?? [];
+    const headers = [
+      "service_name",
+      "service_domain",
+      "breach_status",
+      "deletion_status",
+      "detection_confidence",
+      "last_email_date",
+      "first_detected_at",
+      "evidence_count",
+    ];
+
+    const escapeCsv = (value: unknown): string => {
+      const str = String(value ?? "");
+      if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+        return `"${str.replaceAll('"', '""')}"`;
+      }
+      return str;
+    };
+
+    const lines = [
+      headers.join(","),
+      ...rows.map((row) => headers.map((h) => escapeCsv(row[h as keyof typeof row])).join(",")),
+    ];
+
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ghostaccounts-accounts.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="space-y-8 max-w-2xl">
       {/* Profile */}
@@ -191,9 +233,14 @@ export function SettingsClient({ profile, locale }: SettingsClientProps) {
               <p className="text-sm font-medium text-foreground">{t("export_data")}</p>
               <p className="text-xs text-muted-foreground">{t("export_desc")}</p>
             </div>
-            <Button variant="outline" size="sm" onClick={exportData}>
-              {t("export_data")}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={exportData}>
+                {t("export_json")}
+              </Button>
+              <Button variant="outline" size="sm" onClick={exportCsv}>
+                {t("export_csv")}
+              </Button>
+            </div>
           </div>
         </div>
       </Card>

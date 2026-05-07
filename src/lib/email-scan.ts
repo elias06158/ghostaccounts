@@ -1,86 +1,54 @@
 /**
  * Client-side Gmail scan using PKCE OAuth flow.
- * The Google access token is used ONLY in the browser.
- * Only service names (not email content) are sent to the server.
+ * The Google access token is used only in the browser.
+ * Only derived service metadata is persisted.
  */
 
-export interface FoundService {
-  name: string;
-  domain: string;
-  lastEmailDate: string | null;
-}
+import {
+  type FoundService,
+  discoverServiceFromMessage,
+  mergeFoundService,
+} from "@/lib/account-discovery";
 
-/** Keywords used to identify registration / welcome emails. */
-const REGISTRATION_KEYWORDS = [
-  "welcome",
-  "willkommen",
-  "confirm your email",
-  "verify your email",
-  "bestätige deine",
-  "activate your account",
-  "konto bestätigen",
-  "account created",
-  "konto erstellt",
-  "you're registered",
-  "registration successful",
-  "erfolgreich registriert",
-  "thank you for signing up",
-  "danke für deine registrierung",
-  "get started",
-  "loslegen",
-];
-
-/** Extract company/service domain from a From header. */
-function extractDomain(from: string): string {
-  const match = from.match(/@([^>.\s]+\.[^>.\s]+)/);
-  if (match) {
-    // Strip "mail.", "noreply.", "em.", etc.
-    return match[1].replace(/^(mail|email|noreply|no-reply|mailer|em|em2|em3)\./i, "");
-  }
-  return "";
-}
-
-/** Extract service name from From header or domain. */
-function extractName(from: string, domain: string): string {
-  const nameMatch = from.match(/^"?([^"<@]+?)"?\s*</);
-  if (nameMatch) {
-    const raw = nameMatch[1].trim();
-    // Remove common noise like "Team", "Support", "Notifications", etc.
-    const cleaned = raw
-      .replace(/\b(team|support|notifications?|noreply|no-reply|info|hello|hi)\b/gi, "")
-      .trim();
-    if (cleaned.length > 1) return cleaned;
-  }
-  // Fallback: capitalise the main domain part
-  const domainPart = domain.split(".")[0];
-  return domainPart.charAt(0).toUpperCase() + domainPart.slice(1);
-}
+const GMAIL_LIST_PAGE_SIZE = 500;
+const GMAIL_METADATA_BATCH_SIZE = 20;
+const MAX_GMAIL_MESSAGES = 1500;
 
 /** Scan Gmail inbox using the provided access token. */
 export async function scanGmail(
   accessToken: string,
   onProgress: (found: number) => void
 ): Promise<FoundService[]> {
-  const query = REGISTRATION_KEYWORDS.map((kw) => `subject:"${kw}"`).join(" OR ");
+  const messages: { id: string }[] = [];
+  let pageToken: string | undefined;
 
-  // Fetch message IDs matching the query
-  const listRes = await fetch(
-    `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(query)}&maxResults=200`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
-  if (!listRes.ok) throw new Error("Gmail API error");
-  const listData = await listRes.json();
-  const messages: { id: string }[] = listData.messages ?? [];
+  do {
+    const params = new URLSearchParams({
+      maxResults: String(GMAIL_LIST_PAGE_SIZE),
+      q: "-label:spam -label:trash",
+    });
+    if (pageToken) {
+      params.set("pageToken", pageToken);
+    }
+
+    const listRes = await fetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages?${params.toString()}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    if (!listRes.ok) throw new Error("Gmail API error");
+    const listData = await listRes.json();
+    messages.push(...((listData.messages as { id: string }[] | undefined) ?? []));
+    pageToken = listData.nextPageToken ?? undefined;
+  } while (pageToken && messages.length < MAX_GMAIL_MESSAGES);
 
   const servicesMap = new Map<string, FoundService>();
 
-  // Process in batches of 10
-  for (let i = 0; i < messages.length; i += 10) {
-    const batch = messages.slice(i, i + 10);
+  for (let i = 0; i < messages.length; i += GMAIL_METADATA_BATCH_SIZE) {
+    const batch = messages.slice(i, i + GMAIL_METADATA_BATCH_SIZE);
     await Promise.all(
       batch.map(async (msg) => {
         const msgRes = await fetch(
-          `https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=metadata&metadataHeaders=From&metadataHeaders=Date`,
+          `https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=metadata&metadataHeaders=From&metadataHeaders=Date&metadataHeaders=Subject&metadataHeaders=Reply-To&metadataHeaders=List-Id`,
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
         if (!msgRes.ok) return;
@@ -89,12 +57,21 @@ export async function scanGmail(
           msgData.payload?.headers ?? [];
 
         const fromHeader = headers.find((h) => h.name === "From")?.value ?? "";
+        const subjectHeader = headers.find((h) => h.name === "Subject")?.value ?? null;
+        const replyToHeader = headers.find((h) => h.name === "Reply-To")?.value ?? null;
+        const listIdHeader = headers.find((h) => h.name === "List-Id")?.value ?? null;
         const dateHeader = headers.find((h) => h.name === "Date")?.value ?? null;
-        const domain = extractDomain(fromHeader);
-        if (!domain) return;
-        const name = extractName(fromHeader, domain);
-        if (!servicesMap.has(domain)) {
-          servicesMap.set(domain, { name, domain, lastEmailDate: dateHeader });
+        const found = discoverServiceFromMessage({
+          fromHeader,
+          subject: subjectHeader,
+          snippet: typeof msgData.snippet === "string" ? msgData.snippet : null,
+          dateHeader,
+          replyToHeader,
+          listIdHeader,
+          source: "gmail",
+        });
+        if (found) {
+          mergeFoundService(servicesMap, found);
         }
       })
     );
@@ -103,6 +80,8 @@ export async function scanGmail(
 
   return Array.from(servicesMap.values());
 }
+
+export type { FoundService } from "@/lib/account-discovery";
 
 /** Generate PKCE code verifier + challenge. */
 export async function generatePKCE() {
@@ -213,7 +192,13 @@ export function getDemoServices(): FoundService[] {
     return {
       name: names[domain] ?? domain,
       domain,
+      firstSeenDate: date.toISOString(),
       lastEmailDate: date.toISOString(),
+      evidenceCount: 1,
+      evidenceTypes: ["demo"],
+      senderDomains: [domain],
+      detectionConfidence: "medium" as const,
+      detectionSource: "demo" as const,
     };
   });
 }

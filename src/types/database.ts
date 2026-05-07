@@ -55,6 +55,11 @@ export interface Database {
           service_domain: string;
           first_detected_at: string;
           last_email_date: string | null;
+          evidence_count: number;
+          evidence_types: string[];
+          sender_domains: string[];
+          detection_confidence: "low" | "medium" | "high";
+          detection_source: "gmail" | "imap" | "mixed" | "demo";
           breach_status: "safe" | "breached" | "unknown";
           breach_count: number;
           breach_last_checked: string | null;
@@ -70,6 +75,11 @@ export interface Database {
           service_domain: string;
           first_detected_at?: string;
           last_email_date?: string | null;
+          evidence_count?: number;
+          evidence_types?: string[];
+          sender_domains?: string[];
+          detection_confidence?: "low" | "medium" | "high";
+          detection_source?: "gmail" | "imap" | "mixed" | "demo";
           breach_status?: "safe" | "breached" | "unknown";
           breach_count?: number;
           breach_last_checked?: string | null;
@@ -82,6 +92,11 @@ export interface Database {
           service_name?: string;
           service_domain?: string;
           last_email_date?: string | null;
+          evidence_count?: number;
+          evidence_types?: string[];
+          sender_domains?: string[];
+          detection_confidence?: "low" | "medium" | "high";
+          detection_source?: "gmail" | "imap" | "mixed" | "demo";
           breach_status?: "safe" | "breached" | "unknown";
           breach_count?: number;
           breach_last_checked?: string | null;
@@ -134,6 +149,76 @@ export interface Database {
           }
         ];
       };
+      digital_will: {
+        Row: {
+          id: string;
+          user_id: string;
+          is_active: boolean;
+          inactivity_months: number;
+          global_action: string;
+          transfer_email: string | null;
+          transfer_name: string | null;
+          personal_message: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          is_active?: boolean;
+          inactivity_months?: number;
+          global_action?: string;
+          transfer_email?: string | null;
+          transfer_name?: string | null;
+          personal_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          is_active?: boolean;
+          inactivity_months?: number;
+          global_action?: string;
+          transfer_email?: string | null;
+          transfer_name?: string | null;
+          personal_message?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      digital_will_items: {
+        Row: {
+          id: string;
+          user_id: string;
+          scan_result_id: string;
+          action: string;
+          transfer_email: string | null;
+          note: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          scan_result_id: string;
+          action?: string;
+          transfer_email?: string | null;
+          note?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          scan_result_id?: string;
+          action?: string;
+          transfer_email?: string | null;
+          note?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -153,3 +238,28 @@ export interface Database {
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type ScanResult = Database["public"]["Tables"]["scan_results"]["Row"];
 export type BreachAlert = Database["public"]["Tables"]["breach_alerts"]["Row"];
+
+// Digital Will types (not in generated schema — defined manually)
+export interface DigitalWill {
+  id: string;
+  user_id: string;
+  is_active: boolean;
+  inactivity_months: number;
+  global_action: "delete" | "transfer" | "archive";
+  transfer_email: string | null;
+  transfer_name: string | null;
+  personal_message: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DigitalWillItem {
+  id: string;
+  user_id: string;
+  scan_result_id: string;
+  action: "inherit" | "delete" | "transfer" | "archive" | "keep";
+  transfer_email: string | null;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+}

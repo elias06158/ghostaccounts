@@ -25,7 +25,6 @@ export default async function AccountsPage({ params }: PageProps) {
     .from("scan_results")
     .select("*")
     .eq("user_id", user!.id)
-    .order("breach_status", { ascending: false })
     .order("first_detected_at", { ascending: false });
 
   const isPro = profile?.plan === "pro";

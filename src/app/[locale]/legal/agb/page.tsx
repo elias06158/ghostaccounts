@@ -54,7 +54,7 @@ export default async function AgbPage({ params }: PageProps) {
           },
           {
             title: "§ 6 Free und Pro Plan",
-            content: `Der Free-Plan ist kostenlos und zeigt die Top 20 gefundenen Konten sowie den Risiko-Score. Der Pro-Plan (3,99 €/Monat) bietet vollständigen Zugriff auf alle Konten, den Lösch-Assistenten, monatliche Re-Scans und Breach-Monitoring.`,
+            content: `Der Free-Plan ist kostenlos und zeigt die Top 20 gefundenen Konten sowie den Risiko-Score. Der Pro-Plan (3,99 €/Monat) bietet vollständigen Zugriff auf alle Konten, den Lösch-Assistenten und wiederholte Re-Scans zur Aktualisierung der Kontenliste.`,
           },
           {
             title: "§ 7 Datenschutz",

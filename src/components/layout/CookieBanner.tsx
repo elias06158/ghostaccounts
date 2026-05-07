@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
@@ -11,19 +11,26 @@ interface CookieBannerProps {
 
 export function CookieBanner({ locale }: CookieBannerProps) {
   const t = useTranslations("cookie");
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !localStorage.getItem("cookie-consent");
-  });
+  const [dismissed, setDismissed] = useState(false);
+  const needsConsent = useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener("storage", onStoreChange);
+      return () => window.removeEventListener("storage", onStoreChange);
+    },
+    () => !window.localStorage.getItem("cookie-consent"),
+    () => false
+  );
+
+  const visible = needsConsent && !dismissed;
 
   function accept() {
     localStorage.setItem("cookie-consent", "accepted");
-    setVisible(false);
+    setDismissed(true);
   }
 
   function decline() {
     localStorage.setItem("cookie-consent", "declined");
-    setVisible(false);
+    setDismissed(true);
   }
 
   if (!visible) return null;

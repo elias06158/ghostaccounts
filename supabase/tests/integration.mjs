@@ -76,6 +76,11 @@ async function run() {
     user_id: testUserId,
     service_name: "Spotify",
     service_domain: "spotify.com",
+    evidence_count: 2,
+    evidence_types: ["registration", "sender-domain"],
+    sender_domains: ["spotify.com"],
+    detection_confidence: "high",
+    detection_source: "gmail",
     breach_status: "safe",
     deletion_status: "active",
   });
@@ -90,17 +95,36 @@ async function run() {
     .eq("user_id", testUserId);
   if (readErr || !results || results.length === 0) fail("Read scan_results failed", readErr);
   if (results[0].service_name !== "Spotify") fail("Data mismatch");
+  if (results[0].evidence_count !== 2) fail(`Expected evidence_count=2, got ${results[0].evidence_count}`);
+  if (results[0].detection_confidence !== "high") fail(`Expected detection_confidence=high, got ${results[0].detection_confidence}`);
   pass(`Read ${results.length} scan_result(s), service_name="${results[0].service_name}"`);
 
   // ── 6. Upsert (on conflict update) ───────────────────────────────────────────
   console.log("\n6. DB: Upsert scan_result (conflict on user_id+service_domain)");
   const { error: upsertErr } = await userClient.from("scan_results").upsert(
-    { user_id: testUserId, service_name: "Spotify", service_domain: "spotify.com", deletion_status: "deleted", updated_at: new Date().toISOString() },
+    {
+      user_id: testUserId,
+      service_name: "Spotify",
+      service_domain: "spotify.com",
+      evidence_count: 3,
+      evidence_types: ["registration", "billing", "sender-domain"],
+      sender_domains: ["spotify.com", "notifications.spotify.com"],
+      detection_confidence: "high",
+      detection_source: "mixed",
+      deletion_status: "deleted",
+      updated_at: new Date().toISOString(),
+    },
     { onConflict: "user_id,service_domain", ignoreDuplicates: false }
   );
   if (upsertErr) fail("Upsert failed", upsertErr);
-  const { data: upserted } = await userClient.from("scan_results").select("deletion_status").eq("user_id", testUserId).single();
+  const { data: upserted } = await userClient
+    .from("scan_results")
+    .select("deletion_status,evidence_count,detection_source")
+    .eq("user_id", testUserId)
+    .single();
   if (upserted?.deletion_status !== "deleted") fail(`Expected deletion_status=deleted, got ${upserted?.deletion_status}`);
+  if (upserted?.evidence_count !== 3) fail(`Expected evidence_count=3, got ${upserted?.evidence_count}`);
+  if (upserted?.detection_source !== "mixed") fail(`Expected detection_source=mixed, got ${upserted?.detection_source}`);
   pass("Upsert succeeded, deletion_status updated to 'deleted'");
 
   // ── 7. Insert breach_alert ───────────────────────────────────────────────────

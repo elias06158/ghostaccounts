@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { LayoutDashboard, List, ScanLine, Settings, Crown, Zap } from "lucide-react";
+import { LayoutDashboard, List, ScanLine, Settings, Crown, Zap, Network, TrendingUp, Scroll } from "lucide-react";
 import type { Profile } from "@/types/database";
 import { GhostLogo } from "@/components/GhostLogo";
 
@@ -19,6 +19,9 @@ export function DashboardSidebar({ locale, profile }: DashboardSidebarProps) {
   const nav = [
     { href: `/${locale}/dashboard`, Icon: LayoutDashboard, label: t("dashboard") },
     { href: `/${locale}/dashboard/accounts`, Icon: List, label: t("accounts") },
+    { href: `/${locale}/dashboard/twin`, Icon: Network, label: t("twin") },
+    { href: `/${locale}/dashboard/forecast`, Icon: TrendingUp, label: t("forecast") },
+    { href: `/${locale}/dashboard/will`, Icon: Scroll, label: t("will") },
     { href: `/${locale}/dashboard/scan`, Icon: ScanLine, label: t("scan") },
     { href: `/${locale}/dashboard/settings`, Icon: Settings, label: t("settings") },
   ];
@@ -83,10 +86,4 @@ export function DashboardSidebar({ locale, profile }: DashboardSidebarProps) {
       </div>
     </aside>
   );
-}
-
-
-interface DashboardSidebarProps {
-  locale: string;
-  profile: Profile | null;
 }

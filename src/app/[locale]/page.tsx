@@ -80,15 +80,15 @@ export default async function LandingPage({ params }: PageProps) {
       step: "02", icon: Zap, color: "text-cyan-400", gradient: "from-cyan-600 to-cyan-400",
       title: locale === "de" ? "Entdecken" : "Discover",
       desc: locale === "de"
-        ? "Der Browser-Scan findet alle Registrierungs-E-Mails lokal. Nur Dienst-Namen verlassen deinen Browser."
-        : "The browser scan finds all registration emails locally. Only service names leave your browser.",
+        ? "Die Analyse wertet Betreff, Absender und weitere Mail-Metadaten lokal oder per IMAP-Metadatenzugriff aus. Nur Dienst-Metadaten werden gespeichert."
+        : "The scan evaluates subjects, senders, and related email metadata locally or through IMAP metadata access. Only derived service metadata is stored.",
     },
     {
       step: "03", icon: ShieldAlert, color: "text-purple-400", gradient: "from-purple-600 to-purple-400",
       title: locale === "de" ? "Aufräumen" : "Clean Up",
       desc: locale === "de"
-        ? "Sieh deinen Risiko-Score, prüfe Breach-Status via HIBP und lösche vergessene Konten mit einem Klick."
-        : "See your risk score, check breach status via HIBP, and delete forgotten accounts with one click.",
+        ? "Sieh deinen Risiko-Score, prüfe die Erkennungsqualität und öffne vergessene Konten direkt auf ihrer Löschseite."
+        : "Review your risk score, inspect detection quality, and open forgotten accounts directly on their deletion page.",
     },
   ];
 
