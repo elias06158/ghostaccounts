@@ -318,10 +318,12 @@ export function ScanClient({
           </div>
 
           {detectedProvider && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground px-1">
-              <ChevronDown className="w-3 h-3 text-indigo-400" />
-              <span className="text-indigo-400 font-medium">{detectedProvider.label}</span>
-              <span>— {detectedProvider.hint}</span>
+            <div className="flex flex-wrap items-start gap-x-2 gap-y-0.5 text-xs text-muted-foreground px-1">
+              <span className="flex items-center gap-1 shrink-0">
+                <ChevronDown className="w-3 h-3 text-indigo-400" />
+                <span className="text-indigo-400 font-medium">{detectedProvider.label}</span>
+              </span>
+              <span className="break-words">&mdash; {detectedProvider.hint}</span>
             </div>
           )}
 

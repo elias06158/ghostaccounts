@@ -151,7 +151,7 @@ export function SettingsClient({ profile, locale }: SettingsClientProps) {
       {/* Appearance */}
       <Card>
         <h2 className="font-semibold text-foreground mb-4">{t("theme_section")}</h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {[
             { value: "light", label: t("theme_light"), icon: <Sun className="w-4 h-4" /> },
             { value: "dark", label: t("theme_dark"), icon: <Moon className="w-4 h-4" /> },
@@ -159,6 +159,7 @@ export function SettingsClient({ profile, locale }: SettingsClientProps) {
           ].map((opt) => (
             <button
               key={opt.value}
+              suppressHydrationWarning
               onClick={() => setTheme(opt.value)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm transition-colors ${
                 theme === opt.value
@@ -176,7 +177,7 @@ export function SettingsClient({ profile, locale }: SettingsClientProps) {
       {/* Plan */}
       <Card>
         <h2 className="font-semibold text-foreground mb-4">{t("plan_section")}</h2>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {profile.plan === "pro" ? (
             <>
               <Badge variant="info" className="gap-1 text-sm px-3 py-1.5">
@@ -191,7 +192,7 @@ export function SettingsClient({ profile, locale }: SettingsClientProps) {
                 {t("plan_free")}
               </Badge>
               <p className="text-sm text-muted-foreground">{t("plan_free_desc")}</p>
-              <Button size="sm" className="ml-auto">
+              <Button size="sm" className="sm:ml-auto">
                 <Crown className="w-3.5 h-3.5" />
                 {t("upgrade_button")}
               </Button>
@@ -228,12 +229,12 @@ export function SettingsClient({ profile, locale }: SettingsClientProps) {
       <Card>
         <h2 className="font-semibold text-foreground mb-4">{t("privacy_section")}</h2>
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <p className="text-sm font-medium text-foreground">{t("export_data")}</p>
               <p className="text-xs text-muted-foreground">{t("export_desc")}</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 sm:shrink-0">
               <Button variant="outline" size="sm" onClick={exportData}>
                 {t("export_json")}
               </Button>

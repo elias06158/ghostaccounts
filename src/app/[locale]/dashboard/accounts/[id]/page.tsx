@@ -141,7 +141,7 @@ export default async function AccountDetailPage({ params }: PageProps) {
         {/* Colored top strip based on risk */}
         <div className={`h-1.5 w-full ${isBreached ? "bg-red-500" : isInactive ? "bg-amber-500" : "bg-green-500"}`} />
         <div className="p-6">
-          <div className="flex items-start gap-5">
+          <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
             {/* Favicon / logo */}
             <div className="w-16 h-16 rounded-2xl bg-muted/60 flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-border/40">
               {result.service_domain ? (
@@ -228,7 +228,7 @@ export default async function AccountDetailPage({ params }: PageProps) {
             </div>
 
             {/* Risk score circle */}
-            <div className={`shrink-0 w-18 h-18 rounded-2xl border flex flex-col items-center justify-center p-3 ${riskBg}`}>
+            <div className={`shrink-0 w-[72px] h-[72px] rounded-2xl border flex flex-col items-center justify-center p-3 ${riskBg}`}>
               <span className={`text-2xl font-black ${riskColor}`}>{riskScore}</span>
               <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mt-0.5">
                 {t("risk_score")}

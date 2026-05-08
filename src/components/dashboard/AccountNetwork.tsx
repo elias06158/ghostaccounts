@@ -355,7 +355,7 @@ export function AccountNetwork({ results, email, locale, categoryFilter = "all" 
   }
 
   return (
-    <div className="relative w-full" style={{ height: 580 }}>
+    <div className="relative w-full h-72 sm:h-80 md:h-[580px]">
       <svg
         ref={svgRef}
         className="w-full h-full rounded-2xl bg-background/60 border border-border/50"
@@ -368,24 +368,24 @@ export function AccountNetwork({ results, email, locale, categoryFilter = "all" 
         style={{ opacity: 0, minWidth: 140, maxWidth: 220 }}
       />
       {/* Legend */}
-      <div className="absolute bottom-4 left-4 flex flex-col gap-1.5 p-3 rounded-xl bg-background/80 backdrop-blur-sm border border-border/40 text-xs text-muted-foreground">
+      <div className="absolute bottom-3 left-3 flex flex-col gap-1 p-2 sm:p-3 rounded-xl bg-background/80 backdrop-blur-sm border border-border/40 text-xs text-muted-foreground">
         <p className="font-semibold text-foreground/80 mb-0.5">
           {locale === "de" ? "Risiko" : "Risk"}
         </p>
         {(["high", "medium", "low"] as const).map((r) => (
           <div key={r} className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ background: RISK_COLORS[r] }} />
-            <span>
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: RISK_COLORS[r] }} />
+            <span className="text-[10px] sm:text-xs">
               {r === "high"
-                ? locale === "de" ? "Hoch (gehackt)" : "High (breached)"
+                ? locale === "de" ? "Hoch" : "High"
                 : r === "medium"
-                ? locale === "de" ? "Mittel (inaktiv)" : "Medium (inactive)"
-                : locale === "de" ? "Gering (sicher)" : "Low (safe)"}
+                ? locale === "de" ? "Mittel" : "Medium"
+                : locale === "de" ? "Gering" : "Low"}
             </span>
           </div>
         ))}
-        <p className="text-muted-foreground/60 mt-1 text-xs">
-          {locale === "de" ? "Ziehen zum Verschieben · Scrollen zum Zoomen" : "Drag nodes · Scroll to zoom"}
+        <p className="text-muted-foreground/60 mt-0.5 text-[10px] hidden sm:block">
+          {locale === "de" ? "Ziehen · Scrollen zum Zoomen" : "Drag · Scroll to zoom"}
         </p>
       </div>
       {/* Counter */}

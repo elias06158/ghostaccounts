@@ -11,7 +11,10 @@
     "login": "Anmelden",
     "register": "Jetzt starten",
     "logout": "Abmelden",
-    "language": "Sprache"
+    "language": "Sprache",
+    "upgrade": "Auf Pro upgraden",
+    "sidebar_open": "Menü öffnen",
+    "sidebar_close": "Menü schließen"
   },
   "landing": {
     "hero": {

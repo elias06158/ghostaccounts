@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { LayoutShell } from "@/components/layout/LayoutShell";
 import { CookieBanner } from "@/components/layout/CookieBanner";
 import { createClient } from "@/lib/supabase/server";
 import { routing } from "@/i18n/routing";
@@ -69,8 +70,9 @@ export default async function LocaleLayout({
         >
           <NextIntlClientProvider messages={messages}>
             <Header user={user} locale={locale} />
-            <main className="flex-1">{children}</main>
-            <Footer locale={locale} />
+            <LayoutShell footer={<Footer locale={locale} />} locale={locale}>
+              {children}
+            </LayoutShell>
             <CookieBanner locale={locale} />
           </NextIntlClientProvider>
         </ThemeProvider>

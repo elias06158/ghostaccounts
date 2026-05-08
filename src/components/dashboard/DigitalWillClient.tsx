@@ -340,7 +340,7 @@ export function DigitalWillClient({ results, will: initialWill, items: initialIt
       {/* Per-account overrides */}
       <div className="rounded-2xl border border-border/60 overflow-hidden">
         {/* Summary bar */}
-        <div className="flex items-center justify-between px-5 py-4 bg-card/80 border-b border-border/50">
+        <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-5 py-4 bg-card/80 border-b border-border/50">
           <div>
             <h2 className="font-semibold text-foreground">{t("accounts_title")}</h2>
             <p className="text-xs text-muted-foreground mt-0.5">{t("accounts_subtitle")}</p>
@@ -389,7 +389,7 @@ export function DigitalWillClient({ results, will: initialWill, items: initialIt
                 const isSaving = savingItem === result.id;
 
                 return (
-                  <div key={result.id} className="px-5 py-3.5 flex items-center gap-4">
+                  <div key={result.id} className="px-3 sm:px-5 py-3.5 flex items-center gap-3 sm:gap-4">
                     {/* Favicon */}
                     <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0 overflow-hidden">
                       {result.service_domain ? (

@@ -11,7 +11,10 @@
     "login": "Sign In",
     "register": "Get Started",
     "logout": "Sign Out",
-    "language": "Language"
+    "language": "Language",
+    "upgrade": "Upgrade to Pro",
+    "sidebar_open": "Open menu",
+    "sidebar_close": "Close menu"
   },
   "landing": {
     "hero": {

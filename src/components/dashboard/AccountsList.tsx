@@ -365,7 +365,7 @@ export function AccountsList({ results: initialResults, isPro, locale }: Account
                   padding="sm"
                   className={`flex flex-col border-l-2 ${borderColor} hover:border-indigo-500/30 transition-all duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.08)] group`}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                   {/* Favicon — clickable link to detail page */}
                   <Link
                     href={`/${locale}/dashboard/accounts/${result.id}`}
@@ -392,8 +392,8 @@ export function AccountsList({ results: initialResults, isPro, locale }: Account
                   </Link>
 
                   {/* Service info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <Link
                         href={`/${locale}/dashboard/accounts/${result.id}`}
                         className="font-semibold text-sm text-foreground truncate hover:text-indigo-400 transition-colors"
@@ -423,9 +423,9 @@ export function AccountsList({ results: initialResults, isPro, locale }: Account
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 mt-0.5">
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       {result.service_domain && (
-                        <p className="text-xs text-muted-foreground/70 truncate">
+                        <p className="text-xs text-muted-foreground/70 truncate max-w-[160px]">
                           {result.service_domain}
                         </p>
                       )}
@@ -459,7 +459,7 @@ export function AccountsList({ results: initialResults, isPro, locale }: Account
                     </div>
                   </div>
 
-                  {/* Difficulty */}
+                  {/* Difficulty — desktop only */}
                   {difficulty && !isDeleted && !isIgnored && (
                     <Badge
                       variant={difficulty === "easy" ? "success" : difficulty === "medium" ? "warning" : "danger"}
@@ -473,9 +473,9 @@ export function AccountsList({ results: initialResults, isPro, locale }: Account
                     </Badge>
                   )}
 
-                  {/* Actions */}
+                  {/* Actions — desktop only (visible on hover) */}
                   {!isDeleted && !isIgnored && (
-                    <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="hidden sm:flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       {deletionUrl && (
                         <a href={deletionUrl} target="_blank" rel="noopener noreferrer">
                           <Button size="sm" variant="ghost" title={t("open_delete_page")}>
@@ -517,12 +517,77 @@ export function AccountsList({ results: initialResults, isPro, locale }: Account
                       variant="ghost"
                       onClick={() => updateStatus(result.id, "active")}
                       title="Restore"
-                      className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="hidden sm:inline-flex shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <ShieldCheck className="w-3.5 h-3.5" />
                     </Button>
                   )}
                   </div>
+
+                  {/* Mobile action strip */}
+                  {!isDeleted && (
+                    <div className="sm:hidden flex items-center gap-2 mt-2.5 pt-2 border-t border-border/30">
+                      {!isIgnored && difficulty && (
+                        <Badge
+                          variant={difficulty === "easy" ? "success" : difficulty === "medium" ? "warning" : "danger"}
+                          className="shrink-0"
+                        >
+                          {difficulty === "easy"
+                            ? t("difficulty_easy")
+                            : difficulty === "medium"
+                            ? t("difficulty_medium")
+                            : t("difficulty_hard")}
+                        </Badge>
+                      )}
+                      {!isIgnored && (
+                        <div className="flex items-center gap-0.5 ml-auto">
+                          {deletionUrl && (
+                            <a href={deletionUrl} target="_blank" rel="noopener noreferrer">
+                              <Button size="sm" variant="ghost" title={t("open_delete_page")}>
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </Button>
+                            </a>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setOpenGuideFor((prev) => (prev === result.id ? null : result.id))}
+                            title={t("delete_guide")}
+                          >
+                            <ListOrdered className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => updateStatus(result.id, "deleted")}
+                            title={t("mark_deleted")}
+                            className="hover:text-red-400"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => updateStatus(result.id, "ignored")}
+                            title={t("mark_ignored")}
+                          >
+                            <EyeOff className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      )}
+                      {isIgnored && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => updateStatus(result.id, "active")}
+                          title="Restore"
+                          className="ml-auto"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
 
                   {/* Evidence detail panel */}
                   {expandedEvidence.has(result.id) && (

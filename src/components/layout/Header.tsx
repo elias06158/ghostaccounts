@@ -22,8 +22,13 @@ export function Header({ user, locale }: HeaderProps) {
   const { theme, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Dashboard has its own sidebar with all nav — hide header there
+  const isDashboard = pathname.startsWith(`/${locale}/dashboard`);
+
   const otherLocale = locale === "en" ? "de" : "en";
   const switchLocalePath = pathname.replace(`/${locale}`, `/${otherLocale}`);
+
+  if (isDashboard) return null;
 
   // Landing page nav links — only for unauthenticated users
   const landingLinks = [
@@ -81,7 +86,8 @@ export function Header({ user, locale }: HeaderProps) {
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200"
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            <Sun className="w-4 h-4 hidden dark:block" />
+            <Moon className="w-4 h-4 dark:hidden" />
           </button>
 
           {user ? (
@@ -134,7 +140,8 @@ export function Header({ user, locale }: HeaderProps) {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all"
             >
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              <Sun className="w-4 h-4 hidden dark:block" />
+              <Moon className="w-4 h-4 dark:hidden" />
             </button>
           </div>
         )}
@@ -164,7 +171,8 @@ export function Header({ user, locale }: HeaderProps) {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="p-2 rounded-lg border border-border text-muted-foreground hover:text-foreground transition-colors"
             >
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              <Sun className="w-4 h-4 hidden dark:block" />
+              <Moon className="w-4 h-4 dark:hidden" />
             </button>
           </div>
           <div className="flex flex-col gap-2 mt-1">

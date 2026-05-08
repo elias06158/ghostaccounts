@@ -29,10 +29,10 @@ export default async function DashboardLayout({
     .single();
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)]">
+    <div className="flex h-screen overflow-hidden bg-background">
       <DashboardSidebar locale={locale} profile={profile} />
-      <div className="flex-1 overflow-auto bg-background/50">
-        <div className="mx-auto max-w-5xl px-6 py-8">{children}</div>
+      <div className="flex-1 overflow-y-auto pt-14 md:pt-0">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 py-6 sm:py-8">{children}</div>
       </div>
     </div>
   );

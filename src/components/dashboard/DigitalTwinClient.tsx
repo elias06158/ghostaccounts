@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/Card";
 // Load D3 network only on client (SSR would fail without window)
 const AccountNetwork = dynamic(
   () => import("@/components/dashboard/AccountNetwork").then((m) => m.AccountNetwork),
-  { ssr: false, loading: () => <div className="h-[580px] rounded-2xl bg-muted/30 animate-pulse" /> }
+  { ssr: false, loading: () => <div className="h-72 sm:h-80 md:h-[580px] rounded-2xl bg-muted/30 animate-pulse" /> }
 );
 
 interface DigitalTwinClientProps {
