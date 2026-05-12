@@ -78,6 +78,18 @@ export function ScanClient({
     async (services: FoundService[]) => {
       setScanState("saving");
       const supabase = createClient();
+
+      // If this is a real scan (imap / gmail / mixed), remove any stale demo entries
+      // so that fake demo data never pollutes real scan results.
+      const isRealScan = services.some((s) => s.detectionSource !== "demo");
+      if (isRealScan) {
+        await supabase
+          .from("scan_results")
+          .delete()
+          .eq("user_id", userId)
+          .eq("detection_source", "demo");
+      }
+
       const upsertData = services.map((s) => ({
         user_id: userId,
         service_name: s.name,
